@@ -1,0 +1,14 @@
+# Core dependencies
+pettingzoo>=1.24.0
+numpy>=1.24.0
+
+# RL Training dependencies
+stable-baselines3>=2.1.0
+supersuit>=3.9.0
+tensorboard>=2.14.0
+gymnasium>=0.29.0
+
+# Optional dependencies for enhanced features
+# Uncomment if you want to use these:
+# rich>=13.0.0  # For colored terminal output
+# typer>=0.9.0  # For advanced CLI features

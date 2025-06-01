@@ -1,0 +1,249 @@
+# Training Commands for Chase Game Agents (Windows)
+
+## Basic Training Commands
+
+### Train Chaser1 (PPO)
+# Default settings (500k timesteps, 8 environments)
+python training\train_chaser1.py
+
+# Longer training for better performance
+python training\train_chaser1.py --timesteps 1000000
+
+# Fewer environments (if CPU limited)
+python training\train_chaser1.py --timesteps 500000 --n-envs 4
+
+# Different random seed for variety
+python training\train_chaser1.py --timesteps 500000 --seed 123
+
+# With testing after training
+python training\train_chaser1.py --timesteps 500000 --test-episodes 50
+
+
+### Train Chaser2 (PPO)
+# Against random opponents
+python training\train_chaser2.py --timesteps 750000
+
+# Against trained Chaser1 (find your model folder first)
+# First, check what models you have:
+dir training\models\chaser1_*
+
+# Then use the specific path:
+python training\train_chaser2.py --timesteps 750000 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip
+
+# Longer training with specific model
+python training\train_chaser2.py --timesteps 1000000 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip
+
+# Quick test with fewer timesteps
+python training\train_chaser2.py --timesteps 100000 --n-envs 4 --test-episodes 20
+
+
+### Train Runner (DQN)
+# Against random chasers
+python training\train_runner.py --timesteps 1000000
+
+# Against one trained chaser
+python training\train_runner.py --timesteps 1000000 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip
+
+# Against both trained chasers (hardest)
+python training\train_runner.py --timesteps 1500000 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip --chaser2-model training\models\chaser2_20240115_130000\best\best_model.zip
+
+# Quick training for testing
+python training\train_runner.py --timesteps 200000 --n-envs 1 --seed 42
+
+
+## Advanced Training Scenarios
+
+### Curriculum Learning - Easy to Hard
+
+# Step 1: Train Chaser1 with shorter episodes
+python training\train_chaser1.py --timesteps 300000
+
+# Step 2: Find your Chaser1 model
+dir training\models\chaser1_*
+
+# Step 3: Train Chaser2 against trained Chaser1 (use your actual timestamp)
+python training\train_chaser2.py --timesteps 500000 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip
+
+# Step 4: Find your Chaser2 model
+dir training\models\chaser2_*
+
+# Step 5: Retrain Chaser1 against trained Chaser2 (self-improvement)
+python training\train_chaser1.py --timesteps 500000 --chaser2-model training\models\chaser2_20240115_130000\best\best_model.zip
+
+# Step 6: Train Runner against both improved chasers
+python training\train_runner.py --timesteps 1500000 --chaser1-model training\models\chaser1_20240115_140000\best\best_model.zip --chaser2-model training\models\chaser2_20240115_130000\best\best_model.zip
+
+
+### Different Seeds for Ensemble
+
+# Train multiple Chaser1 models with different seeds
+python training\train_chaser1.py --timesteps 500000 --seed 42
+python training\train_chaser1.py --timesteps 500000 --seed 123
+python training\train_chaser1.py --timesteps 500000 --seed 999
+
+# Train Chaser2 against different Chaser1 models
+python training\train_chaser2.py --timesteps 750000 --seed 42 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip
+
+
+### Quick Experiments
+
+# Very quick training for algorithm testing (100k steps)
+python training\train_chaser1.py --timesteps 100000 --n-envs 4 --test-episodes 5
+
+# Single environment for debugging
+python training\train_chaser1.py --timesteps 50000 --n-envs 1
+
+# No testing, just train
+python training\train_chaser1.py --timesteps 500000 --test-episodes 0
+
+
+## Evaluation Commands
+
+### Basic Evaluation
+# All random agents (baseline)
+python training\evaluate_agents.py --episodes 100
+
+# One trained chaser vs random
+python training\evaluate_agents.py --chaser1 trained --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip --episodes 100
+
+# All trained agents (replace with your actual model paths)
+python training\evaluate_agents.py --runner trained --runner-model training\models\runner_20240115_140000\best\best_model.zip --chaser1 trained --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip --chaser2 trained --chaser2-model training\models\chaser2_20240115_130000\best\best_model.zip --episodes 100
+
+# With visualization
+python training\evaluate_agents.py --chaser1 trained --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip --episodes 10 --render --render-delay 0.5
+
+# Manual control vs trained agents
+python training\evaluate_agents.py --runner manual --chaser1 trained --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip --chaser2 trained --chaser2-model training\models\chaser2_20240115_130000\best\best_model.zip --episodes 5 --render
+
+
+## Model Management
+
+### Finding Your Models
+# List all Chaser1 models
+dir training\models\chaser1_*
+
+# List all models
+dir training\models\
+
+# Check model size
+dir training\models\chaser1_20240115_120000\best\
+
+### Using Specific Checkpoints (not just best model)
+# Use checkpoint instead of best model
+python training\train_chaser2.py --timesteps 500000 --chaser1-model training\models\chaser1_20240115_120000\checkpoints\chaser1_checkpoint_250000_steps.zip
+
+# Evaluate checkpoint vs best model
+python training\evaluate_agents.py --chaser1 trained --chaser1-model training\models\chaser1_20240115_120000\checkpoints\chaser1_checkpoint_250000_steps.zip --episodes 50
+
+
+## Monitoring Training
+
+### TensorBoard Commands
+# Monitor single training run
+tensorboard --logdir training\tensorboard\chaser1_20240115_120000
+
+# Compare multiple runs
+tensorboard --logdir training\tensorboard
+
+# Specific port
+tensorboard --logdir training\tensorboard --port 6007
+
+# If tensorboard command not found, try:
+python -m tensorboard.main --logdir training\tensorboard
+
+
+## Batch Training Scripts
+
+### Windows Batch File (create train_all.bat)
+@echo off
+echo Training Chaser1...
+python training\train_chaser1.py --timesteps 500000 --seed 42
+
+echo.
+echo Training Chaser2...
+REM Update the path below with your actual Chaser1 model path
+python training\train_chaser2.py --timesteps 750000 --seed 42 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip
+
+echo.
+echo Training Runner...
+REM Update the paths below with your actual model paths
+python training\train_runner.py --timesteps 1000000 --seed 42 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip --chaser2-model training\models\chaser2_20240115_130000\best\best_model.zip
+
+echo.
+echo All training completed!
+pause
+
+### PowerShell Alternative
+# Save as train_all.ps1
+Write-Host "Training Chaser1..." -ForegroundColor Green
+python training\train_chaser1.py --timesteps 500000 --seed 42
+
+Write-Host "`nTraining Chaser2..." -ForegroundColor Green
+$chaser1_model = Get-ChildItem -Path "training\models\chaser1_*\best\best_model.zip" | Select-Object -Last 1
+python training\train_chaser2.py --timesteps 750000 --seed 42 --chaser1-model $chaser1_model.FullName
+
+Write-Host "`nTraining Runner..." -ForegroundColor Green
+$chaser2_model = Get-ChildItem -Path "training\models\chaser2_*\best\best_model.zip" | Select-Object -Last 1
+python training\train_runner.py --timesteps 1000000 --seed 42 --chaser1-model $chaser1_model.FullName --chaser2-model $chaser2_model.FullName
+
+
+## Parallel Training (Multiple Command Prompts)
+# Open Command Prompt 1
+python training\train_chaser1.py --timesteps 500000 --seed 42
+
+# Open Command Prompt 2 (can run simultaneously)
+python training\train_chaser1.py --timesteps 500000 --seed 123
+
+
+## Special Cases
+
+### Extra Long Training for Final Models
+# Chaser1 - 2 million steps
+python training\train_chaser1.py --timesteps 2000000 --test-episodes 100
+
+# Chaser2 - 2 million steps (replace with your Chaser1 path)
+python training\train_chaser2.py --timesteps 2000000 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip
+
+# Runner - 3 million steps (replace with your model paths)
+python training\train_runner.py --timesteps 3000000 --chaser1-model training\models\chaser1_20240115_120000\best\best_model.zip --chaser2-model training\models\chaser2_20240115_130000\best\best_model.zip
+
+
+## Tips for Windows Users:
+
+1. **Finding Model Paths**:
+   - Always use `dir training\models\` to see your actual model folders
+   - Model timestamps are in format: YYYYMMDD_HHMMSS
+
+2. **Path Issues**:
+   - Use backslashes (\) not forward slashes (/)
+   - If paths have spaces, wrap in quotes: "path with spaces\model.zip"
+   - Use full paths if relative paths don't work
+
+3. **Command Not Found**:
+   - If `python` doesn't work, try `python3` or `py`
+   - For conda users: Make sure your environment is activated
+   - For tensorboard: `python -m tensorboard.main` if direct command fails
+
+4. **PowerShell vs Command Prompt**:
+   - PowerShell supports better scripting
+   - Command Prompt is simpler for basic commands
+   - Both work fine for training
+
+5. **Long Training Sessions**:
+   - Don't close the command window
+   - Consider using `powershell -NoExit` to keep window open after completion
+   - Check Task Manager to monitor CPU/GPU usage
+
+## Quick Copy-Paste Commands:
+
+# See what models you have
+dir training\models\
+
+# Basic Chaser1 training
+python training\train_chaser1.py --timesteps 500000
+
+# Find the latest Chaser1 model and copy its path
+dir training\models\chaser1_*\best\
+
+# Then paste the path into Chaser2 training
+python training\train_chaser2.py --timesteps 750000 --chaser1-model [PASTE_PATH_HERE]

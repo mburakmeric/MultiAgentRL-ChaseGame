@@ -1,0 +1,181 @@
+# Training Commands for Chase Game Agents
+
+## Basic Training Commands
+
+### Train Chaser1 (PPO)
+# Default settings (500k timesteps, 8 environments)
+python training/train_chaser1.py
+
+# Longer training for better performance
+python training/train_chaser1.py --timesteps 1000000
+
+# Fewer environments (if CPU limited)
+python training/train_chaser1.py --timesteps 500000 --n-envs 4
+
+# Different random seed for variety
+python training/train_chaser1.py --timesteps 500000 --seed 123
+
+# With testing after training
+python training/train_chaser1.py --timesteps 500000 --test-episodes 50
+
+
+### Train Chaser2 (PPO)
+# Against random opponents
+python training/train_chaser2.py --timesteps 750000
+
+# Against trained Chaser1 (recommended)
+python training/train_chaser2.py --timesteps 750000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip
+
+# Longer training with specific model
+python training/train_chaser2.py --timesteps 1000000 --chaser1-model ./training/models/chaser1_20240115_120000/best/best_model.zip
+
+# Quick test with fewer timesteps
+python training/train_chaser2.py --timesteps 100000 --n-envs 4 --test-episodes 20
+
+
+### Train Runner (DQN)
+# Against random chasers
+python training/train_runner.py --timesteps 1000000
+
+# Against one trained chaser
+python training/train_runner.py --timesteps 1000000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip
+
+# Against both trained chasers (hardest)
+python training/train_runner.py --timesteps 1500000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip --chaser2-model ./training/models/chaser2_*/best/best_model.zip
+
+# Quick training for testing
+python training/train_runner.py --timesteps 200000 --n-envs 1 --seed 42
+
+
+## Advanced Training Scenarios
+
+### Curriculum Learning - Easy to Hard
+
+# Step 1: Train Chaser1 with shorter episodes (edit max_turns in config first)
+python training/train_chaser1.py --timesteps 300000
+
+# Step 2: Train Chaser2 against trained Chaser1
+python training/train_chaser2.py --timesteps 500000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip
+
+# Step 3: Retrain Chaser1 against trained Chaser2 (self-improvement)
+python training/train_chaser1.py --timesteps 500000 --chaser2-model ./training/models/chaser2_*/best/best_model.zip
+
+# Step 4: Train Runner against both improved chasers
+python training/train_runner.py --timesteps 1500000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip --chaser2-model ./training/models/chaser2_*/best/best_model.zip
+
+
+### Different Seeds for Ensemble
+
+# Train multiple Chaser1 models with different seeds
+python training/train_chaser1.py --timesteps 500000 --seed 42
+python training/train_chaser1.py --timesteps 500000 --seed 123
+python training/train_chaser1.py --timesteps 500000 --seed 999
+
+# Train Chaser2 against different Chaser1 models
+python training/train_chaser2.py --timesteps 750000 --seed 42 --chaser1-model ./training/models/chaser1_*seed42*/best/best_model.zip
+
+
+### Quick Experiments
+
+# Very quick training for algorithm testing (100k steps)
+python training/train_chaser1.py --timesteps 100000 --n-envs 4 --test-episodes 5
+
+# Single environment for debugging
+python training/train_chaser1.py --timesteps 50000 --n-envs 1
+
+# No testing, just train
+python training/train_chaser1.py --timesteps 500000 --test-episodes 0
+
+
+## Evaluation Commands
+
+### Basic Evaluation
+# All random agents (baseline)
+python training/evaluate_agents.py --episodes 100
+
+# One trained chaser vs random
+python training/evaluate_agents.py --chaser1 trained --chaser1-model ./training/models/chaser1_*/best/best_model.zip --episodes 100
+
+# All trained agents
+python training/evaluate_agents.py --runner trained --runner-model ./training/models/runner_*/best/best_model.zip --chaser1 trained --chaser1-model ./training/models/chaser1_*/best/best_model.zip --chaser2 trained --chaser2-model ./training/models/chaser2_*/best/best_model.zip --episodes 100
+
+# With visualization
+python training/evaluate_agents.py --chaser1 trained --chaser1-model ./training/models/chaser1_*/best/best_model.zip --episodes 10 --render --render-delay 0.5
+
+# Manual control vs trained agents
+python training/evaluate_agents.py --runner manual --chaser1 trained --chaser1-model ./training/models/chaser1_*/best/best_model.zip --chaser2 trained --chaser2-model ./training/models/chaser2_*/best/best_model.zip --episodes 5 --render
+
+
+## Model Management
+
+### Using Specific Checkpoints (not just best model)
+# Use checkpoint instead of best model
+python training/train_chaser2.py --timesteps 500000 --chaser1-model ./training/models/chaser1_*/checkpoints/chaser1_checkpoint_250000_steps.zip
+
+# Evaluate checkpoint vs best model
+python training/evaluate_agents.py --chaser1 trained --chaser1-model ./training/models/chaser1_*/checkpoints/chaser1_checkpoint_250000_steps.zip --episodes 50
+
+
+## Monitoring Training
+
+### TensorBoard Commands
+# Monitor single training run
+tensorboard --logdir ./training/tensorboard/chaser1_20240115_120000
+
+# Compare multiple runs
+tensorboard --logdir ./training/tensorboard
+
+# Specific port
+tensorboard --logdir ./training/tensorboard --port 6007
+
+
+## Batch Training Scripts
+
+### Train All Agents Sequentially
+# Create a batch script (train_all.sh or train_all.bat)
+python training/train_chaser1.py --timesteps 500000 --seed 42
+python training/train_chaser2.py --timesteps 750000 --seed 42 --chaser1-model ./training/models/chaser1_*/best/best_model.zip
+python training/train_runner.py --timesteps 1000000 --seed 42 --chaser1-model ./training/models/chaser1_*/best/best_model.zip --chaser2-model ./training/models/chaser2_*/best/best_model.zip
+
+### Parallel Training (if you have multiple GPUs/CPUs)
+# Terminal 1
+python training/train_chaser1.py --timesteps 500000 --seed 42
+
+# Terminal 2 (can run simultaneously since different agent)
+python training/train_chaser1.py --timesteps 500000 --seed 123
+
+
+## Hyperparameter Experiments
+
+### Modify learning rate (edit training_config.py first)
+# After changing learning_rate in PPO_CONFIG or DQN_CONFIG
+python training/train_chaser1.py --timesteps 500000
+
+### Test with different episode lengths (edit training_config.py)
+# After changing max_turns in ENV_CONFIG
+python training/train_runner.py --timesteps 1000000
+
+
+## Special Cases
+
+### Resume Training (continue from checkpoint)
+# This requires modifying the training script to load existing model
+# Currently not implemented, but checkpoints are saved for future use
+
+### Train against mixed opponents
+# Chaser2 against random runner but trained Chaser1
+python training/train_chaser2.py --timesteps 500000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip
+
+### Extra long training for final models
+python training/train_chaser1.py --timesteps 2000000 --test-episodes 100
+python training/train_chaser2.py --timesteps 2000000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip
+python training/train_runner.py --timesteps 3000000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip --chaser2-model ./training/models/chaser2_*/best/best_model.zip
+
+
+## Notes:
+# - Replace timestamp placeholders (20240115_120000) with actual timestamps from your model folders
+# - Use wildcards (*) carefully - they work in bash/Linux, may need adjustment for Windows
+# - Models are saved in: ./training/models/[agent]_[timestamp]/best/best_model.zip
+# - Checkpoints are in: ./training/models/[agent]_[timestamp]/checkpoints/
+# - Logs are in: ./training/logs/[agent]_[timestamp]/
+# - TensorBoard logs: ./training/tensorboard/[agent]_[timestamp]/

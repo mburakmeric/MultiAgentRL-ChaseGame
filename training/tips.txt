@@ -1,0 +1,87 @@
+# RL Training Tips for Chase Game
+
+## Algorithm Recommendations
+
+### Chaser1 & Chaser2: PPO ✅
+PPO is better for chasers because:
+- **Cooperative potential**: Even though trained separately, PPO's stable learning helps develop consistent chase patterns
+- **Exploration**: PPO's stochastic policy naturally explores different chase strategies
+- **Faster training**: Parallel environments make training much quicker
+- **Robustness**: Less sensitive to hyperparameters than DQN
+
+### Runner: DQN ✅
+DQN is better for the runner because:
+- **Defensive play**: DQN's deterministic policy is excellent for learning optimal escape routes
+- **Memory**: DQN's replay buffer helps remember successful escape patterns
+- **Precision**: Better at learning specific responses to chaser positions
+- **Sample efficiency**: Runner has sparse rewards (only at game end), DQN handles this better
+
+## Suggested Training Order
+
+1. **First: Train Chaser1** (PPO, ~500k steps)
+   ```bash
+   python training/train_chaser1.py --timesteps 500000
+   ```
+
+2. **Second: Train Chaser2** (PPO, ~750k steps, against trained Chaser1)
+   ```bash
+   python training/train_chaser2.py --timesteps 750000 --chaser1-model ./training/models/chaser1_*/best/best_model.zip
+   ```
+
+3. **Last: Train Runner** (DQN, ~1M steps, against both trained chasers)
+   ```bash
+   python training/train_runner.py --timesteps 1000000 --chaser1-model ./path/to/chaser1.zip --chaser2-model ./path/to/chaser2.zip
+   ```
+
+## Additional Training Tips
+
+1. **Monitor training**: Use TensorBoard to watch progress
+   ```bash
+   tensorboard --logdir ./training/tensorboard
+   ```
+
+2. **Tune rewards** (optional): If agents aren't learning well, consider reward shaping in board_state.py:
+   - Small negative reward per step for chasers (encourages faster catching)
+   - Small positive reward per step for runner (encourages survival)
+
+3. **Curriculum learning**: Start with easier scenarios:
+   - Train chasers with fewer obstacles first
+   - Train runner with slower/predictable chasers initially
+
+4. **Expected win rates**:
+   - Random vs Random: ~60-70% runner wins (has advantage)
+   - Trained chasers vs random runner: ~70-80% chaser wins
+   - Random chasers vs trained runner: ~90%+ runner wins
+   - All trained: Should be balanced (~50/50)
+
+## Troubleshooting
+
+### If training is too slow:
+- Reduce `n_envs` if CPU is bottlenecked
+- Decrease `n_steps` in PPO config
+- Use fewer evaluation episodes
+
+### If agents aren't learning:
+- Increase exploration (higher `ent_coef` for PPO, longer `exploration_fraction` for DQN)
+- Check if rewards are too sparse
+- Verify action masking is working correctly
+- Try different learning rates
+
+### If training is unstable:
+- Reduce learning rate
+- Increase batch size
+- For PPO: reduce `clip_range`
+- For DQN: increase `target_update_interval`
+
+## Advanced Techniques
+
+1. **Self-play**: After initial training, have agents play against their own past versions
+2. **League play**: Create a pool of different agent versions and train against randomly selected opponents
+3. **Reward shaping**: Add intermediate rewards for getting closer/farther from opponents
+4. **Observation engineering**: Add features like distance to nearest chaser, escape route availability
+
+## Hardware Considerations
+
+- **CPU**: PPO benefits from multiple CPU cores (set `n_envs` = number of cores)
+- **GPU**: Both PPO and DQN can use GPU, but for this small environment, CPU is often sufficient
+- **RAM**: DQN requires more memory for replay buffer (adjust `buffer_size` if needed)

@@ -1,0 +1,27 @@
+
+Consider the environment above. There are three agents in the environment. C1 and C2 are the chasers and R is trying to run away from them. The initial positions of the agents should be a user parameter. In each turn first R is going to make a move and then C1 and lastly C2. Certainly, the black positions cannot be used by the agents. The game ends if R is in the same cell with one of the chasers. Some rules related to the game are as follow:
+i) In each turn an agent  can move to one of the neighbor cells vertically or horizontally.
+ii) In each turn an agent can decide not to move
+iii) The chasers  Ci, i=1,2 can be in the same cell
+iv) The board configuration and the position of other agents will be known by each agent. There will be no need for exploration.
+Some rules related to your implementation is as follows:
+i) Size of the board is fixed
+ii) The positions of the agesnts should be a user parameter
+ii) The number of black cells should be a user parameter
+iii) The number of turns in the game is a user parameter, in each turn each agent makes a single move
+iii) The black cells can be determined either randomly or manually. A sample run might be:
+> ./a.out
+Enter the number of turns : 100
+Enter the number of black cells on the board: 20
+Are the cells going to be determined randomly or manually [r/m]: m
+Enter the position of the first black cell: a 3
+Enter the position of the second black cell: a 4
+…..
+Enter the position of  Runner: e 6
+Enter the position of  Chaser1: m 2
+Enter the position of  Chaser: m 1
+iv) Each chaser should be autonomous. You cannot use a function/neural network to determine the actions of both chasers. Each chaser should be using a separate function/neural network and should not know which action will be chosen by the other chaser.
+iv) The actions of the runner R can be random or can be controlled by a separate function/neural network or it can be an input by the user. So at the beginning of the execution, your program has to ask how the runner is going to be controlled.
+You are supposed to design and carry out machine learning processes for the three agents defined. However if you come up with a rule based runner, your project will still be accepted.
+
+

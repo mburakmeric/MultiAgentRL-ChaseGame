@@ -1,0 +1,116 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+.conda/
+conda-env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# Training artifacts
+training/models/
+training/logs/
+training/tensorboard/
+training/checkpoints/
+*.zip
+*.pkl
+*.pth
+*.pt
+*.onnx
+
+# Tensorboard
+events.out.tfevents.*
+tensorboard/
+
+# Test coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Windows
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+*.cache
+*.pid
+*.seed
+*.pid.lock
+
+# Project specific
+Capture.PNG
+check.txt
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+
+# Exclude training outputs but keep directory structure
+!training/.gitkeep
+!training/models/.gitkeep
+!training/logs/.gitkeep
+!training/tensorboard/.gitkeep
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Debug files
+*.log
+debug/
+logs/
+
+# Model files (if you want to exclude them)
+# best_model.zip
+# final_model.zip
+# *.model
+# *.h5
