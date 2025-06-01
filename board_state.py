@@ -64,8 +64,14 @@ class BoardState:
         self.game_over = False
         self.winner = None  # "runner" or "chasers"
         
-    def reset(self) -> None:
-        """Reset the board to initial state."""
+    def reset(self, custom_positions: Optional[dict] = None, custom_obstacles: Optional[List[Position]] = None) -> None:
+        """
+        Reset the board to initial state.
+        
+        Args:
+            custom_positions: Dict with keys 'runner', 'chaser1', 'chaser2' mapping to Position objects
+            custom_obstacles: List of Position objects for obstacle placement
+        """
         self.board.fill(self.EMPTY)
         self.turn_count = 0
         self.current_agent_idx = 0
@@ -73,10 +79,16 @@ class BoardState:
         self.winner = None
         
         # Place agents
-        self._place_agents()
+        if custom_positions:
+            self._place_agents_custom(custom_positions)
+        else:
+            self._place_agents()
         
         # Place obstacles
-        self._place_obstacles()
+        if custom_obstacles:
+            self._place_obstacles_custom(custom_obstacles)
+        else:
+            self._place_obstacles()
         
     def _place_agents(self) -> None:
         """Place agents on the board with distance constraints."""
@@ -131,6 +143,21 @@ class BoardState:
         obstacle_positions = random.sample(valid_obstacle_positions, self.num_obstacles)
         for x, y in obstacle_positions:
             self.board[x, y] = self.OBSTACLE
+    
+    def _place_agents_custom(self, custom_positions: dict) -> None:
+        """Place agents at custom positions."""
+        self.runner_pos = custom_positions['runner']
+        self.chaser1_pos = custom_positions['chaser1']
+        self.chaser2_pos = custom_positions['chaser2']
+        
+        self.board[self.runner_pos.x, self.runner_pos.y] = self.RUNNER
+        self.board[self.chaser1_pos.x, self.chaser1_pos.y] = self.CHASER1
+        self.board[self.chaser2_pos.x, self.chaser2_pos.y] = self.CHASER2
+    
+    def _place_obstacles_custom(self, custom_obstacles: List[Position]) -> None:
+        """Place obstacles at custom positions."""
+        for pos in custom_obstacles:
+            self.board[pos.x, pos.y] = self.OBSTACLE
             
     def get_current_agent(self) -> str:
         """Get the name of the current agent to move."""

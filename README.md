@@ -7,7 +7,7 @@ A modular, terminal-playable, and RL-ready grid-based chase game implemented wit
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd version39
+cd version40
 
 # Create virtual environment
 python -m venv venv
@@ -16,14 +16,15 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install pettingzoo numpy
 
-# Optional dependencies for enhanced features
-pip install rich typer
+# For RL training (optional)
+pip install stable-baselines3 supersuit tensorboard
 ```
 
 ## Quick Start
 
 ### Play in Terminal
 
+#### Standard CLI (Command-line arguments)
 ```bash
 # All agents play randomly
 python cli_game.py
@@ -38,12 +39,38 @@ python cli_game.py --runner manual --chaser1 manual --chaser2 manual
 python cli_game.py --seed 42
 ```
 
+#### Interactive CLI (Prompt-based setup)
+```bash
+# Interactive setup for demos and custom games
+python cli_game_interactive.py
+```
+
+The interactive CLI provides a complete setup experience:
+- Custom number of turns and obstacles
+- Choose random or manual obstacle placement
+- Manually specify agent starting positions (format: "a 3", "h 8", etc.)
+- Select agent control methods at runtime
+
 ### Run Tests
 
 ```bash
 # Run test suite (API compliance + statistics)
 python test_env.py
 ```
+
+### Train RL Agents
+
+```bash
+# Train individual agents (each chaser is autonomous)
+python training/train_chaser1.py
+python training/train_chaser2.py
+python training/train_runner.py
+
+# Evaluate trained agents
+python training/evaluate_agents.py
+```
+
+See `RL_TRAINING.md` for detailed training instructions and hyperparameter configuration.
 
 ## Game Rules
 
@@ -110,15 +137,27 @@ class SmartChaser(BaseAgent):
 ## Project Structure
 
 ```
-version39/
-├── board_state.py      # Core game logic
-├── agent_policies.py   # Agent behavior interfaces
-├── cgame_env.py       # PettingZoo environment wrapper
-├── cli_game.py        # Terminal game runner
-├── utils.py           # Rendering and helper functions
-├── test_env.py        # Test suite
-├── README.md          # This file
-└── CLAUDE.md          # Development guidance
+version40/
+├── board_state.py            # Core game logic
+├── agent_policies.py         # Agent behavior interfaces
+├── cgame_env.py             # PettingZoo environment wrapper
+├── cli_game.py              # Standard terminal game runner
+├── cli_game_interactive.py  # Interactive prompt-based CLI
+├── utils.py                 # Rendering and helper functions
+├── test_env.py              # Test suite
+├── configs/
+│   └── training_config.py   # RL training hyperparameters
+├── training/
+│   ├── train_chaser1.py     # Train first chaser
+│   ├── train_chaser2.py     # Train second chaser
+│   ├── train_runner.py      # Train runner (optional)
+│   ├── evaluate_agents.py   # Test trained agents
+│   └── models/              # Saved models directory
+├── wrappers/
+│   └── single_agent_wrapper.py  # Multi-agent to single-agent conversion
+├── README.md                # This file
+├── CLAUDE.md               # Development guidance
+└── RL_TRAINING.md          # RL training guide
 ```
 
 ## Environment Details
