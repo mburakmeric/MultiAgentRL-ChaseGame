@@ -123,3 +123,18 @@ Use `pettingzoo.test.api_test` to validate environment compliance. Run multiple 
 - CLI features will be expanded in later phases
 - All random elements must support fixed seeds for reproducibility
 - Focus on modularity to allow easy agent policy swapping
+
+## Recent Updates (Version 40)
+
+- Added `cli_game_interactive.py` for prompt-based interactive setup (matching termproject.txt requirements)
+- Enhanced `BoardState` to support custom initial positions via `reset(custom_positions=..., custom_obstacles=...)`
+- Both CLI interfaces maintained: standard (`cli_game.py`) for training/testing, interactive for demos
+- Training infrastructure fully implemented with Stable-Baselines3
+- Models saved in `training/models/` directory
+
+## Known Issues & Future Work
+
+- Training may encounter callback errors - check SB3 version compatibility
+- Neural network control for agents not yet integrated into interactive CLI
+- Consider adding trained model loading in CLI for demo purposes
+- Tournament system for comparing different agent strategies not yet implemented

@@ -219,6 +219,24 @@ python cli_game.py --seed 123
 env = ChaseGameEnv(seed=123)
 ```
 
+## Current Status
+
+- ✅ Core game engine complete
+- ✅ PettingZoo environment implementation
+- ✅ Two CLI interfaces (standard and interactive)
+- ✅ RL training pipeline with Stable-Baselines3
+- ✅ Autonomous agent architecture (each chaser independent)
+- 🔄 Neural network integration into CLI (future work)
+- 🔄 Tournament system for agent comparison (future work)
+
+## Troubleshooting
+
+If you encounter training errors:
+- Ensure all dependencies are installed: `pip install stable-baselines3 supersuit tensorboard`
+- Check Python version compatibility (3.8+ recommended)
+- Verify CUDA setup if using GPU acceleration
+- See training logs in `training/logs/` for detailed error messages
+
 ## License
 
 [Your license here]
