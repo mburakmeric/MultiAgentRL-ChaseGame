@@ -41,8 +41,8 @@ This project demonstrates advanced concepts in multi-agent reinforcement learnin
 
 ```bash
 # Clone the repository
-git clone https://github.com/mburakmeric/version40GO.git
-cd version40GO
+git clone https://github.com/mburakmeric/MultiAgentRL-ChaseGame.git
+cd MultiAgentRL-ChaseGame
 
 # Create virtual environment
 python -m venv venv
@@ -127,7 +127,7 @@ python test_env.py
 
 ### Project Structure
 ```
-version40GO/
+MultiAgentRL-ChaseGame/
 ├── 🎮 Core Game Engine
 │   ├── board_state.py          # Game logic and state management
 │   ├── cgame_env.py            # PettingZoo environment wrapper
