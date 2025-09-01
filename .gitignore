@@ -114,3 +114,7 @@ logs/
 # final_model.zip
 # *.model
 # *.h5
+
+# Documentation (private/work-in-progress)
+CLAUDE.md
+ChaseGame_PRD.md
