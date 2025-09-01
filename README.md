@@ -378,34 +378,6 @@ GAME_CONFIG = {
 }
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Here are some areas for improvement:
-
-### Potential Extensions
-- 🎯 **Multi-objective rewards**: Balance between catching and survival
-- 🧠 **Advanced algorithms**: MADDPG, SAC, or transformer-based policies  
-- 🎮 **GUI interface**: Pygame or web-based visualization
-- 📊 **Tournament system**: Automated agent comparison and ranking
-- 🌐 **Online multiplayer**: Real-time human vs AI gameplay
-- 🔧 **Hyperparameter optimization**: Automated tuning with Optuna
-
-### Development Setup
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Install development dependencies: `pip install -r requirements-dev.txt`
-4. Run tests: `python test_env.py`
-5. Submit a pull request
-
-## 📈 Future Roadmap
-
-- [ ] **Phase 1**: GUI implementation with Pygame
-- [ ] **Phase 2**: Multi-agent communication protocols
-- [ ] **Phase 3**: Hierarchical reinforcement learning
-- [ ] **Phase 4**: Real-time online multiplayer
-- [ ] **Phase 5**: Mobile app deployment
-
 ## 📚 Learning Resources
 
 This project demonstrates several advanced ML/AI concepts:
